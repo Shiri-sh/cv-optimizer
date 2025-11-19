@@ -1,6 +1,6 @@
 import pdfKit from 'pdfkit';
 import fs from 'fs';
-function createPdf(res) {
+async function createPdf(res) {
   const doc = new pdfKit();
 
   res.setHeader('Content-Type', 'application/pdf');

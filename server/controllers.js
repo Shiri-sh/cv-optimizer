@@ -25,55 +25,53 @@ const AnalyzeCV = async (req, res) => {
     }
 
     const pdfBuffer = fileToGenerativePart(req.file.path, req.file.mimetype) || null;
-     console.log("=".repeat(60));
+    console.log("=".repeat(60));
     console.log("pdfBuffer ", pdfBuffer);
     if (!pdfBuffer) {
         return res.status(501).json({ error: 'Error processing file' });
     }
-
-    const responseTips = await ai.models.generateContent({
-        model: 'gemini-2.5-flash',
+    const chat = ai.chats.create({
+        model: "gemini-2.5-flash",
+        history: [
+          {
+            role: "user",
+            parts: [{ text:"this is my CV: "+ pdfBuffer},{ text:"this is the job description: "+ description}],
+          },
+        ],
         config: {
             systemInstructions: 'You are a recruiter for this position.',
         },
-        content: [
-            "this is my CV: ",
-            pdfBuffer,
-            "this is the job description: ",
-            description,
-            `I want you to do the following tasks:
-            1. give me the list of main skills required for this job based on the job description provided.
-            2. give me 1-5 changes you think i should make to my CV more proffessional.
-            3. give me list of missing skills required for this job.
-            4. give me a mark on 0-100 based on how well my CV fits the job description provided.`
-        ]
-    });
+      });
+      const responseTips = await chat.sendMessage({
+        message: `I want you to do the following tasks:
+        1. give me the list of main skills required for this job based on the job description provided.
+        2. give me 1-5 changes you think i should make to my CV more proffessional.
+        3. give me list of missing skills required for this job.
+        4. give me a mark on 0-100 based on how well my CV fits the job description provided.`,
+      });
+      console.log("Chat Tips:", responseTips.text());
+    
     if (!responseTips.text()) {
         return res.status(500).json({ error: 'Error generating content' });
     }
-
-    const responseUpdatedCV=ai.models.generateContent({
-        model: 'gemini-2.5-flash',
-        config: {
-            systemInstructions: 'You are a recruiter for this position.',
-        },
-        content: [
-            "this is my CV: ",
-            pdfBuffer,
-            "this is the job description: ",
-            description,
+    console.log("=".repeat(60));
+    const responseUpdatedCV=await chat.sendMessage({
+       message:
             `analyze my CV and adjust it to better fit the job description provided,
             but dont change the truthfulness of the information in my CV.
             and dont change the structure of the CV too much.
             highlight key words and buzzwords from the job description in the updated CV.
             Make sure the CV is well-structured and professional.
             give me the updated CV as a text output.`
-        ]
     });
-
+    console.log("Chat CV:", responseUpdatedCV.text());
     console.log("=".repeat(60));
-    console.log("response ",response);
-    createPdf( response.text());
+    await createPdf(responseUpdatedCV);
+
+    res.json({
+        success: true,
+        tips: tipsText,
+    });
 }
 
 export { DownloadAdvancedCV, AnalyzeCV };
