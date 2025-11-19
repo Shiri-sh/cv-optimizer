@@ -1,4 +1,4 @@
-import { GenerativeAIClient, GoogleGenAI, TextPrompt } from '@google/genai';
+import {  GoogleGenAI } from '@google/genai';
 import fs from 'fs';
 import { fileToGenerativePart, createPdf , eraseOldFiles} from './PdfAuxiliary.js';
 import dotnev, { config } from 'dotenv';

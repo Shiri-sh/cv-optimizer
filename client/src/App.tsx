@@ -6,17 +6,24 @@ function App() {
    const [description, setDescription] = useState<string>("");
 
   const sendRequest = async () => {
+    console.log('description...' + description);
+    console.log('file...' + file);
     const formData = new FormData();
     if (file) {
       formData.append('file', file);
     }
-    formData.append('description', description);
-    const response = await fetch('/analyze', {
-      method: 'POST',
-      body: formData,
-    });
-    const data = await response.json();
-    console.log(data);
+    try{
+        formData.append('description', description);
+        console.log(formData);
+            const response = await fetch('https://localhost:3000/api/analyze', {
+              method: 'POST',
+              body: formData,
+            });
+            const data = await response.json();
+            console.log(data);
+    }catch (e: any) {
+        console.error('Expectation Failed:', e.message);
+    }
   };
   return (
     <>
