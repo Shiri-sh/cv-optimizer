@@ -13,10 +13,10 @@ async function createPdf(res) {
   doc.end();             
 }
 
-function fileToGenerativePart(file, mimeType) {
+function fileToGenerativePart(filePath, mimeType) {
   return {
     inlineData: {
-      data: Buffer.from(file).toString("base64"),
+      data: Buffer.from(fs.readFileSync(filePath)).toString("base64"),
       mimeType
     },
   };
@@ -30,5 +30,16 @@ function eraseOldFiles(filePath) {
      }
     });
 };
+function extractTextBlock(text) {
+  if (!text) return "";
 
-export { createPdf, fileToGenerativePart, eraseOldFiles };
+  const parts = text.split("```");
+
+  let block = parts.length >= 2 ? parts[1] : text;
+
+  return block
+      .replace(/^(\w+)?\n?/, "")  // מנקה שורה ראשונה אם זה סוג (txt, md)
+      .trim();
+}
+
+export { createPdf, fileToGenerativePart, eraseOldFiles ,extractTextBlock}

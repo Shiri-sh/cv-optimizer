@@ -1,6 +1,6 @@
 import {  GoogleGenAI } from '@google/genai';
 import fs from 'fs';
-import { fileToGenerativePart, createPdf , eraseOldFiles} from './PdfAuxiliary.js';
+import { fileToGenerativePart, createPdf , eraseOldFiles,extractTextBlock} from './PdfAuxiliary.js';
 import dotnev, { config } from 'dotenv';
 dotnev.config();
 import multer from 'multer';
@@ -35,7 +35,7 @@ const AnalyzeCV = async (req, res) => {
         history: [
           {
             role: "user",
-            parts: [{ text:"this is my CV: "+ pdfBuffer},{ text:"this is the job description: "+ description}],
+            parts: [{ text:"this is my CV: " },pdfBuffer,{ text:"this is the job description: "+ description}],
           },
         ],
         config: {
@@ -49,9 +49,11 @@ const AnalyzeCV = async (req, res) => {
         3. give me list of missing skills required for this job.
         4. give me a mark on 0-100 based on how well my CV fits the job description provided.`,
       });
-      console.log("Chat Tips:", responseTips.text());
+    //  const tipsText = responseTips.candidates[0].content[0];
+console.log("TIPS Text:", responseTips.text);
+
     
-    if (!responseTips.text()) {
+    if (!responseTips) {
         return res.status(500).json({ error: 'Error generating content' });
     }
     console.log("=".repeat(60));
@@ -64,13 +66,18 @@ const AnalyzeCV = async (req, res) => {
             Make sure the CV is well-structured and professional.
             give me the updated CV as a text output.`
     });
-    console.log("Chat CV:", responseUpdatedCV.text());
+   // const updatedCVText = responseUpdatedCV.candidates[0].content[0];
+    console.log("Updated CV:", responseUpdatedCV.text);
     console.log("=".repeat(60));
-    await createPdf(responseUpdatedCV);
+    const justTextCV = extractTextBlock(responseUpdatedCV.text);
+    //const justTextCV=(responseUpdatedCV.text).split("```")[1];
+    console.log("=".repeat(60));
+    console.log(justTextCV);
+    //await createPdf(justTextCV);
 
     res.json({
         success: true,
-        tips: tipsText,
+        tips: responseTips.text,
     });
 }
 

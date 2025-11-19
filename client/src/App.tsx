@@ -20,7 +20,7 @@ function App() {
         body: formData,
       });
       const data = await response.json();
-      setResponse(data);
+      setResponse(data.tips);
       console.log(data);
     } catch (e: any) {
       console.error('Expectation Failed:', e.error);
