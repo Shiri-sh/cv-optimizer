@@ -4,6 +4,7 @@ import { fileToGenerativePart, createPdf , eraseOldFiles,extractTextBlock} from 
 import dotnev, { config } from 'dotenv';
 dotnev.config();
 import multer from 'multer';
+import e from 'express';
 const geminiApiKey = process.env.GEMINI_API_KEY;
 
 const ai = new GoogleGenAI({
@@ -11,11 +12,27 @@ const ai = new GoogleGenAI({
 });
 
 const DownloadAdvancedCV = async (req, res) => {
+    try {
+    const filePath = path.resolve("uploads/CV After changes.pdf");
 
+    if (!fs.existsSync(filePath)) {
+      return res.status(404).json({ error: "File not found" });
+    }
+
+    res.setHeader("Content-Type", "application/pdf");
+    res.setHeader("Content-Disposition", 'attachment; filename="CV After changes.pdf"');
+
+    const fileStream = fs.createReadStream(filePath);
+    fileStream.pipe(res);
+
+  } catch (error) {
+    console.error("Download error:", error);
+    res.status(500).json({ error: "Server error" });
+  }
 }
 const AnalyzeCV = async (req, res) => {
     console.log("AnalyzeCV called");
-    //console.log("req ",req);
+
     const {description } = req.body;
     if (!description) {
         return res.status(400).json({ error: 'Job description is required' });
@@ -49,8 +66,7 @@ const AnalyzeCV = async (req, res) => {
         3. give me list of missing skills required for this job.
         4. give me a mark on 0-100 based on how well my CV fits the job description provided.`,
       });
-    //  const tipsText = responseTips.candidates[0].content[0];
-console.log("TIPS Text:", responseTips.text);
+      console.log("TIPS Text:", responseTips.text);
 
     
     if (!responseTips) {
@@ -66,14 +82,17 @@ console.log("TIPS Text:", responseTips.text);
             Make sure the CV is well-structured and professional.
             give me the updated CV as a text output.`
     });
-   // const updatedCVText = responseUpdatedCV.candidates[0].content[0];
     console.log("Updated CV:", responseUpdatedCV.text);
+
     console.log("=".repeat(60));
     const justTextCV = extractTextBlock(responseUpdatedCV.text);
-    //const justTextCV=(responseUpdatedCV.text).split("```")[1];
     console.log("=".repeat(60));
+
     console.log(justTextCV);
-    //await createPdf(justTextCV);
+    await eraseOldFiles('uploads/CV before Changes.pdf');
+
+    const pathfile="uploads/";
+    await createPdf(extractTextBlock(justTextCV),pathfile);
 
     res.json({
         success: true,

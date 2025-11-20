@@ -1,16 +1,18 @@
-import pdfKit from 'pdfkit';
+import PDFDocument from 'pdfkit';
 import fs from 'fs';
-async function createPdf(res) {
-  const doc = new pdfKit();
+async function createPdf(text) {
+const fullPath = "uploads/CV After changes.pdf";
 
-  res.setHeader('Content-Type', 'application/pdf');
-  res.setHeader('Content-Disposition', 'inline; filename="CV After changes.pdf"');
+  const doc = new PDFDocument();
+  const stream = fs.createWriteStream(fullPath);
 
-  doc.pipe(res);         
-  
-  doc.text(res);       
-  
-  doc.end();             
+  doc.pipe(stream);
+
+  doc.fontSize(12);
+  doc.text(text);
+
+  doc.end();
+          
 }
 
 function fileToGenerativePart(filePath, mimeType) {
@@ -21,7 +23,7 @@ function fileToGenerativePart(filePath, mimeType) {
     },
   };
 }
-function eraseOldFiles(filePath) {
+async function eraseOldFiles(filePath) {
    fs.unlink(filePath, (err) => {
      if (err) {
        console.error(`Error deleting file: ${err}`);
@@ -38,7 +40,7 @@ function extractTextBlock(text) {
   let block = parts.length >= 2 ? parts[1] : text;
 
   return block
-      .replace(/^(\w+)?\n?/, "")  // מנקה שורה ראשונה אם זה סוג (txt, md)
+      .replace(/^(\w+)?\n?/, "") 
       .trim();
 }
 

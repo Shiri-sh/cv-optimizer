@@ -26,6 +26,21 @@ function App() {
       console.error('Expectation Failed:', e.error);
     }
   };
+  const downloadCV = async() => {
+   const response = await fetch('http://localhost:3000/api/download', {
+      method: 'GET',
+    });
+
+    const blob = await response.blob();
+    const url = window.URL.createObjectURL(blob);
+
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = "CV After changes.pdf";  
+    a.click();
+
+    window.URL.revokeObjectURL(url);
+  };
   return (
     <>
       <div className="app-container">
@@ -46,14 +61,16 @@ function App() {
           </div>
         )}
         <button className='submit-btn' onClick={sendRequest}>Submit</button>
-        {response && (
+        
+      </div>
+      {response && (
           <div className='response-box'>
             <p>Response:</p>
             {response}
+            <button onClick={() => downloadCV()}>download the updated cv</button>
           </div>
         )
         }
-      </div>
     </>
   )
 }
