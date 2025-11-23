@@ -26,8 +26,8 @@ console.log(data);
       console.error('Expectation Failed:', e.error);
     }
   };
-  const downloadCV = async() => {
-   const response = await fetch('http://localhost:3000/api/download', {
+  const downloadCV = async () => {
+    const response = await fetch('http://localhost:3000/api/download', {
       method: 'GET',
     });
 
@@ -36,15 +36,16 @@ console.log(data);
 
     const a = document.createElement("a");
     a.href = url;
-    a.download = "CV After changes.pdf";  
+    a.download = "CV After changes.pdf";
     a.click();
 
     window.URL.revokeObjectURL(url);
   };
   return (
     <>
+    <p className='title'>upload CV and job description and let us do the job for you</p>
+    <div className='main-container'>
       <div className="app-container">
-        <p className='title'>upload cv and job description and let us do the job for you</p>
         <textarea className='description-box'
           placeholder="Enter job description"
           value={description}
@@ -61,16 +62,19 @@ console.log(data);
           </div>
         )}
         <button className='submit-btn' onClick={sendRequest}>Submit</button>
-        
+
       </div>
-      {response && (
-          <div className='response-box'>
-            <p>Response:</p>
-            {response}
-            <button onClick={() => downloadCV()}>download the updated cv</button>
-          </div>
-        )
-        }
+      <div className='response-box'>
+        <p>Response:</p>
+        <pre className='response-text'>
+          {response}
+        </pre>
+
+        {response && (
+          <button onClick={() => downloadCV()}>download the updated cv</button>
+        )}
+      </div>
+</div>
     </>
   )
 }
