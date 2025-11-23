@@ -21,7 +21,7 @@ function App() {
       });
       const data = await response.json();
       setResponse(data.tips);
-      console.log(data);
+console.log(data);
     } catch (e: any) {
       console.error('Expectation Failed:', e.error);
     }

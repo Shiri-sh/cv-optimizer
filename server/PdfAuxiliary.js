@@ -15,6 +15,7 @@ const fullPath = "uploads/CV After changes.pdf";
           
 }
 
+
 function fileToGenerativePart(filePath, mimeType) {
   return {
     inlineData: {
