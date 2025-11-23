@@ -3,8 +3,6 @@ import fs from 'fs';
 import { fileToGenerativePart, createPdf , eraseOldFiles,extractTextBlock} from './PdfAuxiliary.js';
 import dotnev, { config } from 'dotenv';
 dotnev.config();
-import multer from 'multer';
-import e from 'express';
 const geminiApiKey = process.env.GEMINI_API_KEY;
 
 const ai = new GoogleGenAI({
@@ -30,6 +28,9 @@ const DownloadAdvancedCV = async (req, res) => {
     res.status(500).json({ error: "Server error" });
   }
 }
+
+
+
 const AnalyzeCV = async (req, res) => {
     console.log("AnalyzeCV called");
 
@@ -90,11 +91,9 @@ const AnalyzeCV = async (req, res) => {
 
     console.log(justTextCV);
     await eraseOldFiles('uploads/CV before Changes.pdf');
-
-    const pathfile="uploads/";
-    await createPdf(extractTextBlock(justTextCV),pathfile);
-
-    res.json({
+     await createPdf(extractTextBlock(justTextCV));
+    
+   res.json({
         success: true,
         tips: responseTips.text,
     });

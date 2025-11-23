@@ -87,7 +87,7 @@ html, body {
   margin-top: 8px;
 }
 
-.submit-btn {
+.submit-btn , .download-btn {
   width: 100%;
   padding: 12px;
 
@@ -102,21 +102,21 @@ html, body {
   transition: var(--transition);
 }
 
-.submit-btn:hover {
+.submit-btn:hover , .download-btn:hover {
   background: var(--purple);
   color: white;
 }
 
 .response-box {
   flex: 1 1 0;
-  display: flex;
+  /*display: flex;*/
 
   width: 100%;
 
   padding: 20px;
 
   background-color: var(--lilac);
-  color: #ffffff;
+  color: black;
 
   border-radius: 10px;
   box-shadow: var(--shadow);
@@ -124,14 +124,53 @@ html, body {
   animation: fadeIn 0.6s ease-in-out;
   transition: var(--transition);
 }
-
-.response-text {
+.response-box >p{
+  font-size: 22px;
+  font-weight: bold;
+  }
+.markdown-body {
+  font-family: Arial;
+  font-size: 16px;
+  line-height: 1;
+  color: #222;
+  white-space: pre-wrap; 
   max-height: 300px;
   overflow-y: auto;
-  white-space: pre-wrap;
   padding-right: 10px;
-  line-height: 1.4;
-  font-family: monospace;
+}
+.markdown-body ul,
+.markdown-body ol {
+  padding-left: 20px;
+  margin: 0 0 12px;
+}
+
+.markdown-body p {
+  margin: 0 0 12px;
+}
+
+.markdown-body strong {
+  font-weight: 700;
+  color: #000;
+}
+
+.markdown-body ul,
+.markdown-body ol {
+  padding-left: 20px;
+  margin: 0 0 12px;
+}
+
+.markdown-body code {
+  background: #f4f4f4;
+  padding: 3px 5px;
+  border-radius: 4px;
+  font-size: 14px;
+}
+
+.markdown-body h1,
+.markdown-body h2,
+.markdown-body h3 {
+  margin: 12px 0 8px;
+  font-weight: bold;
 }
 
 @keyframes fadeIn {

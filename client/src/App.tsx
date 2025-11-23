@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import ReactMarkdown from "react-markdown";
 import './App.css'
 
 function App() {
@@ -20,12 +21,22 @@ function App() {
         body: formData,
       });
       const data = await response.json();
+      //onst designData = ResultBox(data.tips);
       setResponse(data.tips);
-console.log(data);
+
+      
     } catch (e: any) {
       console.error('Expectation Failed:', e.error);
     }
   };
+  function ResultBox({ dataTips }: { dataTips: string }) {
+    return (
+      <div className="markdown-body">
+        <ReactMarkdown>{dataTips}</ReactMarkdown>
+      </div>
+    );
+  }
+
   const downloadCV = async () => {
     const response = await fetch('http://localhost:3000/api/download', {
       method: 'GET',
@@ -43,38 +54,39 @@ console.log(data);
   };
   return (
     <>
-    <p className='title'>upload CV and job description and let us do the job for you</p>
-    <div className='main-container'>
-      <div className="app-container">
-        <textarea className='description-box'
-          placeholder="Enter job description"
-          value={description}
-          onChange={(e) => setDescription(e.target.value)}
-        />
-        <label className='upload-label'>
-          Upload PDF:
-          <input type="file" accept="application/pdf" onChange={(e) => setFile(e.target.files?.[0] || null)} />
-        </label>
-        {file && (
-          <div className="preview-container">
-            <h3>Preview:</h3>
-            <iframe src={URL.createObjectURL(file)} title="Uploaded PDF" />
-          </div>
-        )}
-        <button className='submit-btn' onClick={sendRequest}>Submit</button>
+      <p className='title'>upload CV and job description and let us do the job for you</p>
+      <div className='main-container'>
+        <div className="app-container">
+          <textarea className='description-box'
+            placeholder="Enter job description"
+            value={description}
+            onChange={(e) => setDescription(e.target.value)}
+          />
+          <label className='upload-label'>
+            Upload PDF:
+            <input type="file" accept="application/pdf" onChange={(e) => setFile(e.target.files?.[0] || null)} />
+          </label>
+          {file && (
+            <div className="preview-container">
+              <h3>Preview:</h3>
+              <iframe src={URL.createObjectURL(file)} title="Uploaded PDF" />
+            </div>
+          )}
+          <button className='submit-btn' onClick={sendRequest}>Submit</button>
 
+        </div>
+        <div className='response-box'>
+          <p>Response:</p>
+           {response && (
+            <>
+              <ResultBox dataTips={response} />
+              <button className='download-btn' onClick={downloadCV}>
+                download the updated cv
+              </button>
+            </>
+          )}
+        </div>
       </div>
-      <div className='response-box'>
-        <p>Response:</p>
-        <pre className='response-text'>
-          {response}
-        </pre>
-
-        {response && (
-          <button onClick={() => downloadCV()}>download the updated cv</button>
-        )}
-      </div>
-</div>
     </>
   )
 }

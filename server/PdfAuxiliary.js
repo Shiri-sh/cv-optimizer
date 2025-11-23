@@ -7,10 +7,8 @@ const fullPath = "uploads/CV After changes.pdf";
   const stream = fs.createWriteStream(fullPath);
 
   doc.pipe(stream);
-
-  doc.fontSize(12);
+  doc.fontSize(11);
   doc.text(text);
-
   doc.end();
           
 }
