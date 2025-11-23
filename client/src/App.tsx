@@ -54,7 +54,7 @@ function App() {
   };
   return (
     <>
-      <p className='title'>upload CV and job description and let us do the job for you</p>
+      <p className='title'>upload CV and job description and let us do the job for you!</p>
       <div className='main-container'>
         <div className="app-container">
           <textarea className='description-box'
@@ -66,17 +66,11 @@ function App() {
             Upload PDF:
             <input type="file" accept="application/pdf" onChange={(e) => setFile(e.target.files?.[0] || null)} />
           </label>
-          {file && (
-            <div className="preview-container">
-              <h3>Preview:</h3>
-              <iframe src={URL.createObjectURL(file)} title="Uploaded PDF" />
-            </div>
-          )}
           <button className='submit-btn' onClick={sendRequest}>Submit</button>
 
         </div>
         <div className='response-box'>
-          <p>Response:</p>
+          <p>here goes the results:</p>
            {response && (
             <>
               <ResultBox dataTips={response} />
