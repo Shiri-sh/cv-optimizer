@@ -6,29 +6,32 @@ function App() {
   const [file, setFile] = useState<File | null>(null);
   const [description, setDescription] = useState<string>("");
   const [response, setResponse] = useState<string>("");
+
   const sendRequest = async () => {
-    console.log('description...' + description);
-    console.log('file...' + file);
+      if (!file || !description) {
+      alert('Please upload a file and enter a description.');
+      return;
+    }
+    setResponse('loading....');
     const formData = new FormData();
     if (file) {
       formData.append('file', file);
     }
     try {
       formData.append('description', description);
-      console.log(formData);
       const response = await fetch('http://localhost:3000/api/analyze', {
         method: 'POST',
         body: formData,
       });
       const data = await response.json();
-      //onst designData = ResultBox(data.tips);
-      setResponse(data.tips);
 
-      
+      setResponse(data.tips);
+     
     } catch (e: any) {
       console.error('Expectation Failed:', e.error);
     }
   };
+
   function ResultBox({ dataTips }: { dataTips: string }) {
     return (
       <div className="markdown-body">
@@ -71,15 +74,17 @@ function App() {
         </div>
         <div className='response-box'>
           <p>here goes the results:</p>
-           {response && (
+           {response&& (
             <>
               <ResultBox dataTips={response} />
+              {response!== 'loading....' &&(
               <button className='download-btn' onClick={downloadCV}>
                 download the updated cv
               </button>
+              ) }
             </>
           )}
-        </div>
+           </div>
       </div>
     </>
   )

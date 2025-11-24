@@ -57,7 +57,6 @@ html, body {
 
 .description-box {
   width: 85%;
-  /* height: 80%; */
   height: 290px;
   padding: 12px;
   margin: 20px;
@@ -109,18 +108,12 @@ html, body {
 
 .response-box {
   flex: 1 1 0;
-  /*display: flex;*/
-
   width: 100%;
-
   padding: 20px;
-
   background-color: var(--lilac);
   color: black;
-
   border-radius: 10px;
   box-shadow: var(--shadow);
-
   animation: fadeIn 0.6s ease-in-out;
   transition: var(--transition);
 }

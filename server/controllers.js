@@ -1,10 +1,11 @@
 import { GoogleGenAI } from '@google/genai';
 import fs from 'fs';
-import { fileToGenerativePart, createPdf, eraseOldFiles, extractTextBlock } from './PdfAuxiliary.js';
-import dotnev, { config } from 'dotenv';
-dotnev.config();
-const geminiApiKey = process.env.GEMINI_API_KEY;
+import { fileToGenerativePart, createPdf, eraseOldFiles } from './PdfAuxiliary.js';
+import dotnev from 'dotenv';
 
+dotnev.config();
+
+const geminiApiKey = process.env.GEMINI_API_KEY;
 const ai = new GoogleGenAI({
   apiKey: geminiApiKey,
 });
@@ -17,23 +18,21 @@ const DownloadAdvancedCV = async (req, res) => {
       return res.status(404).json({ error: "File not found" });
     }
 
-    res.setHeader("Content-Type", "application/pdf");
-    res.setHeader("Content-Disposition", 'attachment; filename="CV After changes.pdf"');
-
-    const fileStream = fs.createReadStream(filePath);
-    fileStream.pipe(res);
+    res.download(filePath, "CV After changes.pdf", (err) => {
+      if (err) {
+        console.error("Download error:", err);
+        return res.status(500).json({ error: "Server error" });
+      }
+    });
 
   } catch (error) {
     console.error("Download error:", error);
     res.status(500).json({ error: "Server error" });
   }
-}
-
+};
 
 
 const AnalyzeCV = async (req, res) => {
-  console.log("AnalyzeCV called");
-
   const { description } = req.body;
   if (!description) {
     return res.status(400).json({ error: 'Job description is required' });
@@ -43,8 +42,6 @@ const AnalyzeCV = async (req, res) => {
   }
 
   const pdfBuffer = fileToGenerativePart(req.file.path, req.file.mimetype) || null;
-  console.log("=".repeat(60));
-  console.log("pdfBuffer ", pdfBuffer);
   if (!pdfBuffer) {
     return res.status(501).json({ error: 'Error processing file' });
   }
@@ -67,13 +64,9 @@ const AnalyzeCV = async (req, res) => {
         3. give me list of missing skills required for this job.
         4. give me a mark on 0-100 based on how well my CV fits the job description provided.`,
   });
-  console.log("TIPS Text:", responseTips.text);
-
-
   if (!responseTips) {
     return res.status(500).json({ error: 'Error generating content' });
   }
-  console.log("=".repeat(60));
   const responseUpdatedCV = await chat.sendMessage({
     message:
     `Analyze my resume and rewrite it to match the job description provided.
@@ -90,8 +83,8 @@ const AnalyzeCV = async (req, res) => {
         • Margins: 50px on all sides
         • Usable text width: 495px
     - To ensure the resume fits on one page:
-        • Limit the entire output to MAXIMUM 2300 characters.
-        • No individual line should exceed 80 characters.
+        • Limit the entire output to MAXIMUM 2500 characters.
+        • No individual line should exceed 90 characters.
         • Keep paragraphs concise.
         • Remove content that does not support the role.
     
@@ -102,17 +95,10 @@ const AnalyzeCV = async (req, res) => {
     
     .`
   });
-  console.log("Updated CV:", responseUpdatedCV.text);
-
-  console.log("=".repeat(60));
-  const justTextCV = extractTextBlock(responseUpdatedCV.text);
-  console.log("=".repeat(60));
-
-  console.log(justTextCV);
+  const justTextCV =responseUpdatedCV.text;
   await eraseOldFiles('uploads/CV before Changes.pdf');
-  await createPdf(extractTextBlock(justTextCV));
-
-  res.json({
+  await createPdf(justTextCV);
+    res.json({
     success: true,
     tips: responseTips.text,
   });

@@ -1,7 +1,6 @@
 import express from 'express';
 import cors from 'cors';
 import dotenv from 'dotenv';
-//import  uuidv4  from 'uuid';
 import multer from 'multer';
 import path from 'path';
 import { DownloadAdvancedCV, AnalyzeCV } from './controllers.js';
@@ -11,7 +10,6 @@ dotenv.config();
 const app = express();
 app.use(cors());
 app.use(express.json());
-//app.use("/api/uploads", express.static(path.join(__dirname, 'uploads')));
 
 const router = express.Router();
 app.use('/api',router);
@@ -32,14 +30,11 @@ const storage = multer.diskStorage({
 
 const upload = multer({ storage: storage });
 
-
 router.get('/download/:filename', DownloadAdvancedCV);
 router.post('/analyze', upload.single("file"), AnalyzeCV);
 router.get('/test', (req, res) => {
   res.json({ message: 'API is working' });
 });
-
-
 
 app.listen(port, () => {
   console.log(`Server is running on port ${port}`);
