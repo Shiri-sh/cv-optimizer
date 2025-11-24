@@ -2,7 +2,7 @@
   --purple: #7a3eb1;
   --lilac: #c8a8e9;
   --gray: #e5e5e5;
-  --brown: #8b5e3c;
+  --brown: #613d22;
   --yellow: #f9de59;
 
   --text-dark: #2a2a2a;
@@ -127,6 +127,7 @@ html, body {
 .response-box >p{
   font-size: 22px;
   font-weight: bold;
+  color: var(--brown);
   }
 .markdown-body {
   font-family: Arial;
